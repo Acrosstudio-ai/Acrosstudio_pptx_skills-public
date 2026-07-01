@@ -7,8 +7,8 @@
     "email": "generative.ai@acrosstudio.co.jp",
     "url": "https://github.com/Acrosstudio-ai"
   },
-  "homepage": "https://github.com/Acrosstudio-ai/Acrosstudio_pptx_skills",
-  "repository": "https://github.com/Acrosstudio-ai/Acrosstudio_pptx_skills",
+  "homepage": "https://github.com/Acrosstudio-ai/Acrosstudio_pptx_skills-public",
+  "repository": "https://github.com/Acrosstudio-ai/Acrosstudio_pptx_skills-public",
   "license": "MIT",
   "keywords": [
     "skills",
@@ -29,6 +29,6 @@
       "Read",
       "Write"
     ],
-    "websiteURL": "https://github.com/Acrosstudio-ai/Acrosstudio_pptx_skills"
+    "websiteURL": "https://github.com/Acrosstudio-ai/Acrosstudio_pptx_skills-public"
   }
 }

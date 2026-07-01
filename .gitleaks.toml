@@ -1,0 +1,53 @@
+# gitleaks config — Acrosstudio skills suite
+#
+# Purpose: this repo is PUBLIC. Its examples are proposal/estimate templates, so
+# the realistic re-poisoning risk is (1) API keys/tokens and (2) real client PII
+# (emails, phone numbers, company names) accidentally pasted into an example.
+#
+# `[extend] useDefault` keeps all of gitleaks' built-in secret rules; the custom
+# rules below add high-signal client-PII checks. Test with:
+#   gitleaks dir . --config .gitleaks.toml --redact -v
+
+title = "Acrosstudio skills — secret & client-PII guardrail"
+
+[extend]
+useDefault = true
+
+# ── Custom rules: real client PII in source ────────────────────────────────
+# Note: gitleaks uses Go RE2 (no look-around). We match broadly and exclude
+# known-good values in [allowlist] below.
+
+[[rules]]
+id = "acr-client-email"
+description = "Email address (allowlisted domains excluded — flags possible real client PII)"
+regex = '''[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'''
+tags = ["pii", "email"]
+
+[[rules]]
+id = "acr-jp-phone"
+description = "Japanese phone number (possible real client contact)"
+regex = '''0\d{1,3}-\d{2,4}-\d{4}'''
+tags = ["pii", "phone"]
+
+# ── Allowlist ──────────────────────────────────────────────────────────────
+[allowlist]
+description = "Fictional sample data, generated output, and non-source paths"
+regexTarget = "match"
+
+# Files/dirs that are not hand-authored source (lockfiles, builds, binaries).
+paths = [
+  '''package-lock\.json''',
+  '''(^|/)dist/''',
+  '''(^|/)node_modules/''',
+  '''\.(png|jpe?g|gif|svg|pdf|pptx|xlsx|ico)$''',
+]
+
+# Known-good values that must never trip the custom PII rules.
+regexes = [
+  '''@acrosstudio\.co\.jp''',              # our own contact address
+  '''@example\.(com|org|net|jp)''',        # documentation placeholders
+  '''noreply@''',                          # git co-author trailers
+  '''@users\.noreply\.github\.com''',
+  '''@schemas\.''',                        # XML namespace URIs (openxmlformats etc.)
+  '''@(?:sha|npm|types|eslint)''',         # scoped npm package refs in prose
+]

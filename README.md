@@ -29,13 +29,26 @@ flow.
 ### Claude Code
 
 ```
-/plugin marketplace add Acrosstudio-ai/Acrosstudio_pptx_skills
+/plugin marketplace add Acrosstudio-ai/Acrosstudio_pptx_skills-public
 /plugin install acrosstudio-skills@acrosstudio
 ```
 
-### claude.ai
+### claude.ai (web app)
 
-Download a `*.skill` bundle from the latest [Release](../../releases) and upload it in Skills.
+Skills run on the web app for Free, Pro, Max, Team, and Enterprise plans.
+
+1. **Enable code execution** — Free/Pro/Max: `Settings > Capabilities` → turn on
+   *Code execution and file creation*. Team/Enterprise: an org owner enables
+   *Code execution and file creation* and *Skills* under `Organization settings > Skills`.
+2. **Get a skill bundle** — download a `*.skill` (a ZIP of the skill folder) from
+   the latest [Release](../../releases), or run `npm run build` to produce
+   `dist/*.skill` locally. The ZIP must contain the skill folder at its root
+   (not a bare `SKILL.md`), and each skill's `name` must be lowercase letters,
+   numbers, and hyphens only.
+3. **Upload** — `Customize > Skills` → `+` → `+ Create skill` → *Upload a skill*,
+   then select the bundle. Toggle it on when you want it active.
+
+Uploaded skills are private to your account; org-wide sharing needs a Team/Enterprise plan.
 
 ### Agent SDK / Cursor / Codex / Gemini
 
