@@ -1,0 +1,21 @@
+{
+  "name": "acrosstudio-skills",
+  "displayName": "Acrosstudio Skills Suite",
+  "version": "0.4.2",
+  "description": "Acrosstudio proposals, strategy frameworks, and engagement orchestration",
+  "author": {
+    "name": "Acrosstudio",
+    "email": "generative.ai@acrosstudio.co.jp"
+  },
+  "homepage": "https://github.com/Acrosstudio-ai/Acrosstudio_pptx_skills",
+  "repository": "https://github.com/Acrosstudio-ai/Acrosstudio_pptx_skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "acrosstudio",
+    "pptx",
+    "strategy",
+    "consulting"
+  ],
+  "skills": "./skills/"
+}

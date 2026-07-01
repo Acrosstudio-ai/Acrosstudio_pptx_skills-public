@@ -1,0 +1,27 @@
+repos:
+  - repo: local
+    hooks:
+      - id: validate-skills
+        name: validate skills
+        entry: node scripts/validate-skills.mjs
+        language: system
+        pass_filenames: false
+        files: ^skills/
+      - id: version-check
+        name: version drift check
+        entry: node scripts/bump-version.mjs --check
+        language: system
+        pass_filenames: false
+        files: ^(package\.json|\.claude-plugin/|\.cursor-plugin/|\.codex-plugin/|gemini-extension\.json|\.version-bump\.json)
+      - id: prettier
+        name: prettier
+        entry: npx --yes prettier@3 --write --ignore-unknown
+        language: system
+        files: \.(mjs|js|cjs|json|md|yml|yaml)$
+        exclude: ^(skills/|docs/plans/|dist/)
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-json

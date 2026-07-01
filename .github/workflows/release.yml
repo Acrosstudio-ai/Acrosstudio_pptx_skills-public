@@ -1,0 +1,22 @@
+name: Release
+on:
+  push:
+    tags: ['v*']
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate
+        run: node scripts/validate-skills.mjs
+      - name: Build .skill bundles
+        run: node scripts/build-skill-bundles.mjs
+      - name: Create release with bundles
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.skill

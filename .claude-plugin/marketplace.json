@@ -1,0 +1,20 @@
+{
+  "name": "acrosstudio",
+  "description": "Acrosstudio Claude skills marketplace",
+  "owner": {
+    "name": "Acrosstudio",
+    "email": "generative.ai@acrosstudio.co.jp"
+  },
+  "plugins": [
+    {
+      "name": "acrosstudio-skills",
+      "description": "Acrosstudio proposals, strategy frameworks, and engagement orchestration",
+      "version": "0.4.2",
+      "source": "./",
+      "author": {
+        "name": "Acrosstudio",
+        "email": "generative.ai@acrosstudio.co.jp"
+      }
+    }
+  ]
+}

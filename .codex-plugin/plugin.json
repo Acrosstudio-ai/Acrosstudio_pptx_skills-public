@@ -1,0 +1,34 @@
+{
+  "name": "acrosstudio-skills",
+  "version": "0.4.2",
+  "description": "Acrosstudio proposals, strategy frameworks, and engagement orchestration",
+  "author": {
+    "name": "Acrosstudio",
+    "email": "generative.ai@acrosstudio.co.jp",
+    "url": "https://github.com/Acrosstudio-ai"
+  },
+  "homepage": "https://github.com/Acrosstudio-ai/Acrosstudio_pptx_skills",
+  "repository": "https://github.com/Acrosstudio-ai/Acrosstudio_pptx_skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "acrosstudio",
+    "pptx",
+    "strategy",
+    "consulting"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Acrosstudio Skills Suite",
+    "shortDescription": "Proposals, strategy frameworks, and engagement orchestration",
+    "longDescription": "Acrosstudio's consulting delivery skills: intake, McKinsey-style strategy frameworks, and branded PPTX/XLSX deliverables.",
+    "developerName": "Acrosstudio",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/Acrosstudio-ai/Acrosstudio_pptx_skills"
+  }
+}
