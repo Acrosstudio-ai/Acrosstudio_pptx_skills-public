@@ -1,6 +1,12 @@
 name: Release
+# Two ways to release:
+#  1. Auto — push to main. If package.json's version has no matching v<version>
+#     tag yet, this creates the tag and release. Plain commits (version
+#     unchanged) are skipped, so not every push releases.
+#  2. Manual — push a v* tag yourself; that tag is released as-is.
 on:
   push:
+    branches: [main]
     tags: ['v*']
 jobs:
   release:
@@ -9,14 +15,39 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # need existing tags to detect an already-released version
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Resolve release tag
+        id: v
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            echo "tag=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          else
+            tag="v$(node -p "require('./package.json').version")"
+            if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+              echo "release=false" >> "$GITHUB_OUTPUT"
+              echo "::notice::$tag already released; skipping"
+            else
+              echo "tag=$tag" >> "$GITHUB_OUTPUT"
+              echo "release=true" >> "$GITHUB_OUTPUT"
+            fi
+          fi
       - name: Validate
+        if: steps.v.outputs.release == 'true'
         run: node scripts/validate-skills.mjs
+      - name: Unit tests
+        if: steps.v.outputs.release == 'true'
+        run: node --test 'tests/**/*.test.mjs'
       - name: Build .skill bundles
+        if: steps.v.outputs.release == 'true'
         run: node scripts/build-skill-bundles.mjs
       - name: Create release with bundles
+        if: steps.v.outputs.release == 'true'
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.v.outputs.tag }}
           files: dist/*.skill
