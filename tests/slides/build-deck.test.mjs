@@ -89,8 +89,8 @@ test('unknown, negative, fractional-yen and overflowing monetary inputs fail ins
 for (const [type, count] of [
   ['proposal', 5],
   ['meeting', 3],
-  ['cost', 5],
-  ['roi', 3]
+  ['cost', 6],
+  ['roi', 5]
 ]) {
   test(`${type} produces editable native Slides with original cover and normal-slide assets`, () => {
     const body = buildDeck(presentation, example(type))
@@ -141,6 +141,12 @@ test('financial slides expose computed values and loss cases rather than placeho
   assert.ok(roi.includes('ROI: 80.0%'))
   assert.ok(roi.includes('ROI: -160.0%'))
   assert.ok(roi.includes('回収期間: 効果不足'))
+  assert.ok(roi.includes('ROI（%）= 期間純利益 ÷ 初期投資 × 100'))
+  assert.ok(roi.includes('回収期間（年）= 初期投資 ÷ 年間ネット効果'))
+  assert.ok(costs.includes('出典: 同梱 examples/cost.json'))
+  assert.ok(costs.includes('移行・教育・追加開発費は別途確認'))
+  assert.ok(roi.includes('割引・インフレは未反映'))
+  assert.ok(roi.includes('年間効果の測定方法と責任者'))
   assert.throws(() => buildDeck(presentation, { ...example('roi'), currency: 'USD' }))
 })
 

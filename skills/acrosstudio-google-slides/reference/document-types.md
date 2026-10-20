@@ -15,6 +15,8 @@
 | `cost` | `currency: "JPY"`、`basis`、`plans`: 構成ごとの `name`、`years`、`oneTimeCosts`、`monthlyCosts` | 初期/月額の全内訳＋初期合計・月額・年額・期間総費用 |
 | `roi` | `currency: "JPY"`、`basis`、`plans`: テーマごとの `name`、`initialInvestment`、`annualOperatingCost`、`annualBenefit`、`years` | 前提＋年間/累計ネット効果・期間純利益・ROI・回収期間・期間総費用 |
 
+費用・ROI にも同じ `pages` 形式で補足ページを追加できます。`basis` は本文に置く短い前提サマリーとし、戦略分析の長い前提・出典・リスク・確認事項は補足カードへ分けて残します。確認事項を 60 文字のリード文へ押し込んだり、消したりしません。ROI には計算定義のページも自動で付きます。
+
 `oneTimeCosts` と `monthlyCosts` はそれぞれ `{ "name": "項目", "amount": 10000 }` の配列です。`[]` は費用なしと確認済みの場合だけ使います。不明な金額を 0 に置き換えません。`basis` に、確認済みか仮定か、台数・人数・利用量・税の扱い・含めない費用を明記します。
 
 スキルの読み取りで返された絶対パスを `SKILL_DIR` とします。QM の `.packs/` ではなく、`acrosstudio-google-slides/` 本体のディレクトリです。`scripts/` と `examples/` はこの配下にあります。

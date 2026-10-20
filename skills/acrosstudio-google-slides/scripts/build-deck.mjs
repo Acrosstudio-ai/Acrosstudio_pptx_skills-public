@@ -4,6 +4,33 @@ import { calculateCosts, calculateRoi } from './financials.mjs'
 
 const ASSETS =
   'https://raw.githubusercontent.com/Acrosstudio-ai/Acrosstudio_pptx_skills-public/c1b1c61789e92c930fb9e71606c0a398c8b7af3f/skills/acrosstudio-pptx/assets/'
+const LAYOUT = {
+  width: 13.333333,
+  height: 7.5,
+  cover: {
+    title: [0.9, 2.55, 11.4, 1.5],
+    subtitle: [0.9, 4.2, 11.4, 0.8],
+    version: [0.9, 6.75, 9, 0.35],
+    logo: [11.3, 6.85, 1.5, 0.406]
+  },
+  titleBar: [0.267, 0.4, 0.08, 0.666],
+  logo: [10.427, 0.1, 2.903, 0.792],
+  title: [0.533, 0.333, 9.4, 0.8],
+  lead: [0.533, 1.226, 12.264, 0.55],
+  copyright: [7.332, 7.092, 5.599, 0.293],
+  cards: {
+    left: 0.533,
+    top: 2.1,
+    width: 12.264,
+    height: 4.5,
+    gap: 0.2,
+    headerHeight: 0.55,
+    textInset: 0.18,
+    textTop: 2.85,
+    lineSpacing: 0.6,
+    lineHeight: 0.56
+  }
+}
 const yen = (value) => `${new Intl.NumberFormat('ja-JP').format(value)} 円`
 const decimal = (value) =>
   new Intl.NumberFormat('ja-JP', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(
@@ -31,97 +58,122 @@ function plans(input) {
 }
 
 function documentPages(input) {
+  const extraPages = input.pages ?? []
+  if (!Array.isArray(extraPages)) throw new Error('pages must be an array of card pages')
   if ((input.type === 'cost' || input.type === 'roi') && input.currency !== 'JPY')
     throw new Error(
       'Financial slides require explicit currency JPY; no currency conversion is performed'
     )
   if (input.type === 'proposal' || input.type === 'meeting') {
-    if (!Array.isArray(input.pages) || input.pages.length === 0)
+    if (extraPages.length === 0)
       throw new Error('pages must contain the approved proposal or meeting content')
-    return input.pages
+    return extraPages
   }
   if (input.type === 'cost') {
-    return plans(input).flatMap((plan) => {
-      text(plan.name, 'plan.name', 18)
-      const result = calculateCosts(plan)
-      const pages = []
-      for (let i = 0; i < Math.max(plan.oneTimeCosts.length, plan.monthlyCosts.length); i += 4) {
-        const cards = [
-          ['初期費用', plan.oneTimeCosts],
-          ['月額運用費', plan.monthlyCosts]
-        ].flatMap(([title, items]) => {
-          const rows = items.slice(i, i + 4)
-          return rows.length
-            ? [{ title, lines: rows.map((item) => `${item.name}: ${yen(item.amount)}`) }]
-            : []
+    return plans(input)
+      .flatMap((plan) => {
+        text(plan.name, 'plan.name', 18)
+        const result = calculateCosts(plan)
+        const pages = []
+        for (let i = 0; i < Math.max(plan.oneTimeCosts.length, plan.monthlyCosts.length); i += 4) {
+          const cards = [
+            ['初期費用', plan.oneTimeCosts],
+            ['月額運用費', plan.monthlyCosts]
+          ].flatMap(([title, items]) => {
+            const rows = items.slice(i, i + 4)
+            return rows.length
+              ? [{ title, lines: rows.map((item) => `${item.name}: ${yen(item.amount)}`) }]
+              : []
+          })
+          pages.push({ title: `${plan.name} 費用内訳`, lead: input.basis, cards })
+        }
+        pages.push({
+          title: `${plan.name} 費用サマリー`,
+          lead: input.basis,
+          cards: [
+            { title: '初期費用', lines: [yen(result.initialInvestment), '一時費用の合計'] },
+            {
+              title: '運用費',
+              lines: [
+                `月額: ${yen(result.monthlyOperatingCost)}`,
+                `年額: ${yen(result.annualOperatingCost)}`
+              ]
+            },
+            {
+              title: '評価期間の総費用',
+              lines: [
+                `評価期間: ${result.years} 年`,
+                yen(result.totalCost),
+                '初期費用＋年額運用費×年数'
+              ]
+            }
+          ]
         })
-        pages.push({ title: `${plan.name} 費用内訳`, lead: input.basis, cards })
-      }
-      pages.push({
-        title: `${plan.name} 費用サマリー`,
-        lead: input.basis,
-        cards: [
-          { title: '初期費用', lines: [yen(result.initialInvestment), '一時費用の合計'] },
-          {
-            title: '運用費',
-            lines: [
-              `月額: ${yen(result.monthlyOperatingCost)}`,
-              `年額: ${yen(result.annualOperatingCost)}`
-            ]
-          },
-          {
-            title: '評価期間の総費用',
-            lines: [
-              `評価期間: ${result.years} 年`,
-              yen(result.totalCost),
-              '初期費用＋年額運用費×年数'
-            ]
-          }
-        ]
+        return pages
       })
-      return pages
-    })
+      .concat(extraPages)
   }
   if (input.type === 'roi') {
-    return plans(input).map((plan) => {
-      text(plan.name, 'plan.name', 18)
-      const result = calculateRoi(plan)
-      return {
-        title: `${plan.name} ROI 試算`,
-        lead: input.basis,
-        cards: [
-          {
-            title: '前提',
-            lines: [
-              `初期投資: ${yen(plan.initialInvestment)}`,
-              `年間運用費: ${yen(plan.annualOperatingCost)}`,
-              `年間効果: ${yen(plan.annualBenefit)}`,
-              `評価期間: ${plan.years} 年`
-            ]
-          },
-          {
-            title: 'ネット効果と純利益',
-            lines: [
-              `年間ネット: ${yen(result.annualNetBenefit)}`,
-              `累計ネット: ${yen(result.cumulativeNetBenefit)}`,
-              `期間純利益: ${yen(result.netProfit)}`
-            ]
-          },
-          {
-            title: 'ROI・回収・総費用',
-            lines: [
-              result.roiPercent === null
-                ? 'ROI: 算出不可（初期投資0）'
-                : `ROI: ${decimal(result.roiPercent)}%`,
-              result.paybackYears === null
-                ? '回収期間: 効果不足'
-                : `回収期間: ${decimal(result.paybackYears)} 年`,
-              `期間総費用: ${yen(result.totalCost)}`
-            ]
-          }
-        ]
-      }
-    })
+    return plans(input)
+      .map((plan) => {
+        text(plan.name, 'plan.name', 18)
+        const result = calculateRoi(plan)
+        return {
+          title: `${plan.name} ROI 試算`,
+          lead: input.basis,
+          cards: [
+            {
+              title: '前提',
+              lines: [
+                `初期投資: ${yen(plan.initialInvestment)}`,
+                `年間運用費: ${yen(plan.annualOperatingCost)}`,
+                `年間効果: ${yen(plan.annualBenefit)}`,
+                `評価期間: ${plan.years} 年`
+              ]
+            },
+            {
+              title: 'ネット効果と純利益',
+              lines: [
+                `年間ネット: ${yen(result.annualNetBenefit)}`,
+                `累計ネット: ${yen(result.cumulativeNetBenefit)}`,
+                `期間純利益: ${yen(result.netProfit)}`
+              ]
+            },
+            {
+              title: 'ROI・回収・総費用',
+              lines: [
+                result.roiPercent === null
+                  ? 'ROI: 算出不可（初期投資0）'
+                  : `ROI: ${decimal(result.roiPercent)}%`,
+                result.paybackYears === null
+                  ? '回収期間: 効果不足'
+                  : `回収期間: ${decimal(result.paybackYears)} 年`,
+                `期間総費用: ${yen(result.totalCost)}`
+              ]
+            }
+          ]
+        }
+      })
+      .concat(
+        {
+          title: 'ROI の計算方法',
+          lead: '初期投資0のROIは算出不可。年間ネット効果が0以下なら回収不可。',
+          cards: [
+            {
+              title: '単純 ROI・単純回収（割引なし）',
+              lines: [
+                '年間ネット効果 = 年間効果 − 年額運用費',
+                '累計ネット効果 = 年間ネット効果 × 評価年数',
+                '期間純利益 = 累計ネット効果 − 初期投資',
+                'ROI（%）= 期間純利益 ÷ 初期投資 × 100',
+                '回収期間（年）= 初期投資 ÷ 年間ネット効果',
+                '期間総費用 = 初期投資 + 年額運用費 × 評価年数'
+              ]
+            }
+          ]
+        },
+        extraPages
+      )
   }
   throw new Error('type must be proposal, meeting, cost, or roi')
 }
@@ -155,7 +207,7 @@ export function buildDeck(presentation, input) {
   const width = points(presentation.pageSize?.width),
     height = points(presentation.pageSize?.height)
   if (Math.abs(width / height - 16 / 9) > 0.01) throw new Error('A widescreen page is required')
-  const k = width / 13.333333,
+  const k = width / LAYOUT.width,
     fontScale = k / 72
   const pages = documentPages(input)
   const requests = []
@@ -288,28 +340,25 @@ export function buildDeck(presentation, input) {
     return objectId
   }
   const cover = slide()
-  image(cover, 'cover_texture.jpg', 0, 0, 13.333333, 7.5)
-  box(cover, input.title, 0.9, 2.55, 11.4, 1.5, 36, 'FFFFFF', true)
-  box(cover, input.subtitle, 0.9, 4.2, 11.4, 0.8, 18, 'FFFFFF')
-  box(cover, input.versionDate, 0.9, 6.75, 9, 0.35, 11, 'FFFFFF')
-  image(cover, 'logo_white.png', 11.3, 6.85, 1.5, 0.406)
+  image(cover, 'cover_texture.jpg', 0, 0, LAYOUT.width, LAYOUT.height)
+  box(cover, input.title, ...LAYOUT.cover.title, 36, 'FFFFFF', true)
+  box(cover, input.subtitle, ...LAYOUT.cover.subtitle, 18, 'FFFFFF')
+  box(cover, input.versionDate, ...LAYOUT.cover.version, 11, 'FFFFFF')
+  image(cover, 'logo_white.png', ...LAYOUT.cover.logo)
   for (const page of pages) {
     text(page.title, 'page.title', 30)
     text(page.lead, 'page.lead', 60)
     if (!Array.isArray(page.cards) || page.cards.length < 1 || page.cards.length > 3)
       throw new Error('Each page needs 1–3 cards')
     const pageId = slide()
-    rectangle(pageId, 0.267, 0.4, 0.08, 0.666, '073763')
-    image(pageId, 'logo_black.png', 10.427, 0.1, 2.903, 0.792)
-    box(pageId, page.title, 0.533, 0.333, 9.4, 0.8, 22, '073763', true)
-    box(pageId, page.lead, 0.533, 1.226, 12.264, 0.55, 14, '262626', true)
+    rectangle(pageId, ...LAYOUT.titleBar, '073763')
+    image(pageId, 'logo_black.png', ...LAYOUT.logo)
+    box(pageId, page.title, ...LAYOUT.title, 22, '073763', true)
+    box(pageId, page.lead, ...LAYOUT.lead, 14, '262626', true)
     box(
       pageId,
       `Copyright ${input.copyrightYear}. Acrosstudio, Inc. <Confidential>`,
-      7.332,
-      7.092,
-      5.599,
-      0.293,
+      ...LAYOUT.copyright,
       8,
       '595959',
       false,
@@ -317,23 +366,36 @@ export function buildDeck(presentation, input) {
       'END',
       'Arial'
     )
-    const gap = 0.2,
-      cardWidth = (12.264 - gap * (page.cards.length - 1)) / page.cards.length
+    const cardLayout = LAYOUT.cards
+    const cardWidth =
+      (cardLayout.width - cardLayout.gap * (page.cards.length - 1)) / page.cards.length
     page.cards.forEach((card, index) => {
       text(card.title, 'card.title', page.cards.length === 3 ? 18 : 28)
       if (!Array.isArray(card.lines) || card.lines.length < 1 || card.lines.length > 6)
         throw new Error('Each card needs 1–6 lines; split long content into more pages')
-      const x = 0.533 + index * (cardWidth + gap)
-      rectangle(pageId, x, 2.1, cardWidth, 4.5, 'FFFFFF', 'BFBFBF')
-      box(pageId, card.title, x, 2.1, cardWidth, 0.55, 14, 'FFFFFF', true, '073763', 'CENTER')
+      const x = cardLayout.left + index * (cardWidth + cardLayout.gap)
+      rectangle(pageId, x, cardLayout.top, cardWidth, cardLayout.height, 'FFFFFF', 'BFBFBF')
+      box(
+        pageId,
+        card.title,
+        x,
+        cardLayout.top,
+        cardWidth,
+        cardLayout.headerHeight,
+        14,
+        'FFFFFF',
+        true,
+        '073763',
+        'CENTER'
+      )
       card.lines.forEach((line, row) =>
         box(
           pageId,
           text(line, 'card.line', page.cards.length === 3 ? 36 : 65),
-          x + 0.18,
-          2.85 + row * 0.6,
-          cardWidth - 0.36,
-          0.56,
+          x + cardLayout.textInset,
+          cardLayout.textTop + row * cardLayout.lineSpacing,
+          cardWidth - 2 * cardLayout.textInset,
+          cardLayout.lineHeight,
           12,
           '262626'
         )
