@@ -11,6 +11,14 @@ const skillsDir = join(here, '..', '..', 'skills')
 // skill (Plans 2/3) must register its triggers here, which Test A enforces.
 const TRIGGERS = {
   'acrosstudio-pptx': ['提案書', '打合せ', '議事録', 'ROI', 'お見積もり', '運用費'],
+  'acrosstudio-google-slides': [
+    'Google Slides',
+    'Google スライド',
+    '提案書',
+    '打合せ',
+    '共同編集',
+    'PPTX'
+  ],
   'acrosstudio-intake': ['インテーク', 'ヒアリング', '案件', 'スコープ'],
   'strat-situation-assessment': ['現状分析', '現状把握', '診断', 'アセスメント'],
   'strat-growth-barriers': ['成長', '阻害要因', 'ボトルネック', '停滞'],

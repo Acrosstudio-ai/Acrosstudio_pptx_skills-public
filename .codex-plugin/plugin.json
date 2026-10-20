@@ -10,25 +10,15 @@
   "homepage": "https://github.com/Acrosstudio-ai/Acrosstudio_pptx_skills-public",
   "repository": "https://github.com/Acrosstudio-ai/Acrosstudio_pptx_skills-public",
   "license": "MIT",
-  "keywords": [
-    "skills",
-    "acrosstudio",
-    "pptx",
-    "strategy",
-    "consulting"
-  ],
+  "keywords": ["skills", "acrosstudio", "pptx", "strategy", "consulting"],
   "skills": "./skills/",
   "interface": {
     "displayName": "Acrosstudio Skills Suite",
     "shortDescription": "Proposals, strategy frameworks, and engagement orchestration",
-    "longDescription": "Acrosstudio's consulting delivery skills: intake, McKinsey-style strategy frameworks, and branded PPTX/XLSX deliverables.",
+    "longDescription": "Acrosstudio's consulting delivery skills: intake, McKinsey-style strategy frameworks, and branded Google Slides / PPTX / XLSX deliverables.",
     "developerName": "Acrosstudio",
     "category": "Productivity",
-    "capabilities": [
-      "Interactive",
-      "Read",
-      "Write"
-    ],
+    "capabilities": ["Interactive", "Read", "Write"],
     "websiteURL": "https://github.com/Acrosstudio-ai/Acrosstudio_pptx_skills-public"
   }
 }

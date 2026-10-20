@@ -11,18 +11,20 @@
 | `20`〜`29` | 選択・採算 | `strat-strategic-options`、`strat-business-case`、`strat-pricing`、`strat-portfolio-review` | `engagement/2x-<skill>.md` |
 | `30`〜`39` | 実行 | `strat-operating-model`、`strat-initiative-prioritizer`、`strat-transformation-roadmap` | `engagement/3x-<skill>.md` |
 | `40`〜`49` | コミュニケーション | `strat-narrative`、`strat-decision-memo`、`strat-stakeholder-alignment` | `engagement/4x-<skill>.md` |
-| — | 成果物 | `acrosstudio-pptx`（`engagement/*.md` を読み込む） | `*.pptx` / `*.xlsx` |
+| — | 成果物 | `acrosstudio-google-slides` または `acrosstudio-pptx`（`engagement/*.md` を読み込む） | Slides リンク / `*.pptx` / `*.xlsx` |
 
 ## 契約のルール
 
 - 各成果物は、戦略スキルの通常出力（`# <フレームワーク> — <対象>` で始まり `## 要点` / `## 確認事項` で締めくくる分析）をバンドのファイル名で保存したものです。
 - バンド内では、エンゲージメントに必要なスキルのみを実行し、実行順に番号を振ります（例：`10-situation-assessment.md`、`11-growth-barriers.md`）。
 - バンドを省略することは有効です。成果物作成ステップは存在する `engagement/*.md` ファイルを読み込みます。
+- 納品形式が未指定なら確認します。Google スライドは `acrosstudio-google-slides`、PowerPoint / Excel 生成は `acrosstudio-pptx` を使います。Slides と PPTX の両方を求められたら、同じ Slides 資料から PPTX を書き出します。接続・スキル不足を理由に別形式へ無断で切り替えません。
+- Google スライドは承認済みテンプレートまたは編集対象と保存先を確認し、書き込み承認と全ページの目視確認を実施します。最終報告には資料 ID・リンクまたはファイルパスと、未検証事項を含めます。
 - 貴社の数値を勝手に作成しません。オーケストレーターはすべての `## 確認事項` 項目を利用者へ差し戻し、成果物を作成する前に確認を取ります。
 
 ## 実施例（架空）
 
-このマッピングは例示のみを目的とします。架空の貴社「**株式会社ミドリ精工**」（精密部品メーカー）の成長戦略ご提案を用います。数値は作成しておらず、このウォークスルーはオーケストレーションの各ステップが成果物ファイル名にどう対応するかのみを示します。
+このマッピングは例示のみを目的とします。架空の貴社「**株式会社ミドリ精工**」（精密部品メーカー）の成長戦略ご提案を PowerPoint ファイルで納品する依頼を用います。数値は作成しておらず、このウォークスルーはオーケストレーションの各ステップが成果物ファイル名にどう対応するかのみを示します。
 
 | ステップ | 実行スキル | バンド | 書き出す成果物 |
 | --- | --- | --- | --- |

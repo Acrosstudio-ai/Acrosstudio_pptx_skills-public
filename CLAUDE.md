@@ -7,7 +7,7 @@ plugin; `skills/` is the single source of truth (flat namespace).
 
 ## Naming convention
 
-- `acrosstudio-*` — branded products (intake, engagement, pptx)
+- `acrosstudio-*` — branded products (intake, engagement, pptx, google-slides)
 - `strat-*` — generic strategy frameworks
 
 ## Add or edit a skill
@@ -32,7 +32,8 @@ continue to pass.
 ## Engagement pipeline
 
 `acrosstudio-engagement` orchestrates the suite end-to-end: it runs intake →
-the `strat-*` analyses → `acrosstudio-pptx`, handing output between stages
+the `strat-*` analyses → `acrosstudio-google-slides` or `acrosstudio-pptx`,
+according to the requested delivery format, handing output between stages
 through numbered markdown artifacts in an `engagement/` workspace. Each
 sub-skill stays independent and communicates only through those files, so
 skipping a stage is valid. See

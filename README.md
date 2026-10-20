@@ -1,7 +1,7 @@
 # Acrosstudio Skills Suite
 
 Acrosstudio's Claude skills for consulting delivery: engagement intake,
-McKinsey-style strategy frameworks, and branded PPTX/XLSX deliverables.
+McKinsey-style strategy frameworks, and branded Google Slides / PPTX / XLSX deliverables.
 The repo root is a Claude Code plugin; `skills/` is the single source of truth.
 
 ## Skills
@@ -18,11 +18,13 @@ The repo root is a Claude Code plugin; `skills/` is the single source of truth.
 - `acrosstudio-engagement` — orchestrator that chains the skills below into one
   pipeline through an `engagement/` workspace.
 - `acrosstudio-pptx` — branded proposal / estimate / meeting-doc generator.
+- `acrosstudio-google-slides` — creates or edits Google Slides from an approved
+  Acrosstudio template, delivers an editable link, and optionally exports PPTX.
 
 Together these run a full engagement: `acrosstudio-engagement` takes the
-`acrosstudio-intake` brief through the relevant `strat-*` analyses and into an
-`acrosstudio-pptx` deliverable, following an intake → strategy → deliverable
-flow.
+`acrosstudio-intake` brief through the relevant `strat-*` analyses and into the
+requested Google Slides or PPTX deliverable, following an intake → strategy →
+deliverable flow. If the format is unspecified, it asks rather than choosing silently.
 
 ## Install
 
@@ -53,6 +55,27 @@ Uploaded skills are private to your account; org-wide sharing needs a Team/Enter
 ### Agent SDK / Cursor / Codex / Gemini
 
 Point the tool at this repo; skills are discovered under `skills/`.
+
+### QM (org-wide)
+
+An org admin can register this repository in **Admin → Skill packs**, pin the
+reviewed commit SHA, then **Browse → org-wide → Import selected**. Import
+`acrosstudio-google-slides`, plus intake, strategy, and engagement skills as needed.
+Org installation does not grant Google access: each user still needs an authorized
+Google connection and access to the template, target deck, and destination folder.
+
+The Slides skill is text-only and bundles its QM API reference. It uses QM's
+existing `google-drive-sheets` connector skill rather than adding another OAuth
+integration. Provide an approved Acrosstudio Google Slides template URL; the
+Google template owns the branding, so no PPTX layout code or binary assets are
+copied into the Slides skill. Writes and sharing changes require approval, and
+completed decks require visual review.
+
+The original `acrosstudio-pptx` remains available on the other platforms. QM's
+text-only pack importer excludes it because it contains PNG/JPG assets; importing
+the pack does not make that original generator QM-compatible. A request requiring
+that generator must use a supported environment. For a Google Slides deck that
+also needs PPTX, use the Slides skill's export path and check conversion fidelity.
 
 ## Develop
 
