@@ -4,6 +4,8 @@
 
 ### Added
 
+- Explicit Google Slides support for proposals, meeting materials, cost estimates, and ROI presentations, with a native request builder and four runnable input examples. Existing strategy-analysis skills feed these outputs through intake and engagement.
+- Tested cost and ROI calculations matching the original annual-net/initial-investment definitions, including zero-investment, loss, missing-input, overflow, and pagination handling. Financial inputs are whole-yen JPY amounts and whole-year periods; no Excel auto-recalculation is claimed.
 - `acrosstudio-google-slides` for creating and editing decks using this repository's Acrosstudio design rules, examples, logos, and background, delivering editable links, and optionally exporting the same deck to PPTX. It bundles text-only source/API guides and reuses the existing per-user Google connector.
 - QM org-wide skill-pack installation instructions, including the existing binary-asset limitation of the original PPTX generator.
 

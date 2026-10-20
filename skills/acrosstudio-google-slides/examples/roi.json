@@ -1,0 +1,25 @@
+{
+  "type": "roi",
+  "currency": "JPY",
+  "title": "投資対効果の試算（検証用）",
+  "subtitle": "架空の入力値・円・税抜・割引なし",
+  "versionDate": "Ver 0.1 / 2026-10-20",
+  "copyrightYear": 2026,
+  "basis": "費用試算と同じ仮定値。年間効果は別途確認済みの例示入力。",
+  "plans": [
+    {
+      "name": "クラウド構成",
+      "initialInvestment": 1000000,
+      "annualOperatingCost": 600000,
+      "annualBenefit": 1200000,
+      "years": 3
+    },
+    {
+      "name": "効果不足のケース",
+      "initialInvestment": 1000000,
+      "annualOperatingCost": 600000,
+      "annualBenefit": 400000,
+      "years": 3
+    }
+  ]
+}

@@ -17,6 +17,8 @@ const TRIGGERS = {
     '提案書',
     '打合せ',
     '共同編集',
+    '費用',
+    'ROI',
     'PPTX'
   ],
   'acrosstudio-intake': ['インテーク', 'ヒアリング', '案件', 'スコープ'],

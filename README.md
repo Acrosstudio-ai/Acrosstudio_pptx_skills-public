@@ -18,9 +18,10 @@ The repo root is a Claude Code plugin; `skills/` is the single source of truth.
 - `acrosstudio-engagement` — orchestrator that chains the skills below into one
   pipeline through an `engagement/` workspace.
 - `acrosstudio-pptx` — branded proposal / estimate / meeting-doc generator.
-- `acrosstudio-google-slides` — creates Google Slides using this repository's
-  Acrosstudio design rules, layouts, logos, and backgrounds, edits existing decks,
-  delivers an editable link, and optionally exports PPTX. No separate template required.
+- `acrosstudio-google-slides` — creates **proposals, meeting materials, cost estimates,
+  and ROI presentations in Google Slides**, using this repository's Acrosstudio
+  design, logos, and background. Includes a native Slides request builder, tested
+  cost/ROI calculations, and four runnable JSON examples. No separate template required.
 
 Together these run a full engagement: `acrosstudio-engagement` takes the
 `acrosstudio-intake` brief through the relevant `strat-*` analyses and into the
@@ -74,6 +75,14 @@ including assets omitted by QM's text-only importer. No separate Google Slides
 template is required, and no independent copy of the brand rules is maintained.
 Writes and sharing changes require approval; completed decks require visual review
 against the repository's design, not just a successful API call.
+
+The existing **13 strategy-analysis skills** remain available and feed these four
+Slides document types through intake and engagement. See the bundled
+[`document-type guide`](skills/acrosstudio-google-slides/reference/document-types.md)
+for inputs, workflow, examples, and the shared cost/ROI definitions. Financial
+inputs are explicit whole-yen JPY amounts and whole-year evaluation periods;
+unknown inputs are not replaced with zero. ROI is displayed as analysis in Slides,
+not as an automatically recalculating Excel workbook.
 
 The original `acrosstudio-pptx` remains available on the other platforms. QM's
 text-only pack importer excludes it because it contains PNG/JPG assets; importing

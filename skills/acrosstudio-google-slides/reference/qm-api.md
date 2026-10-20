@@ -24,6 +24,18 @@ curl --fail-with-body -sS 'https://slides.googleapis.com/v1/presentations/PRESEN
 
 `presentationId`、`revisionId`、`slides[].objectId` と要素のテキストを読みます。スライドと表のテキストだけでなく、テンプレート由来の発表者ノートと、Drive のコメントも確認します。コメントを残してコピーしたり、他案件の情報を納品したりしません。
 
+## 4 種類の資料を作成する（承認後）
+
+提案書・打合せ・費用・ROI は `reference/document-types.md` の入力形式を用意し、次の作成スクリプトを使います。既存の Google 接続を使い、認証情報を引数に渡しません。
+
+```bash
+node "$SKILL_DIR/scripts/create-deck.mjs" content.json DESTINATION_FOLDER_ID
+```
+
+`SKILL_DIR` はスキル本体の絶対パスです。実行前に資料名・内容・保存先・継承される共有範囲を確認し、明示的な書き込み承認を得ます。マイドライブ直下が承認された場合だけ保存先を `root` とします。スクリプトはトークンの再取得、別アカウントへの切り替え、共有権限変更を行いません。作成済み ID がある状態で失敗したら、その資料を確認し、無条件に新規作成をやり直しません。
+
+以下は別の認証済み Google ツールを使う場合や既存資料を操作する場合の API 手順です。
+
 ## 空の Google スライドを作成する（承認後）
 
 利用者が承認した資料名と保存先を `create.json` に用意し、Drive に Google スライド形式で作成します。テンプレートのコピーから始めません。
@@ -44,9 +56,22 @@ curl --fail-with-body -sS -X POST \
 
 利用者が既存資料のコピーを明示的に依頼した場合だけ、Drive の `files/FILE_ID/copy` に承認済みの名前・保存先を渡します。コピー先の ID と revision を読み直してから編集し、元ファイルは変更しません。
 
-## 描画・内容の編集（承認後）
+## 提案書・打合せ・費用・ROI の描画（承認後）
 
-新規ページは `createSlide`（`slideLayoutReference.predefinedLayout: "BLANK"`）で作ります。画像は `createImage` に原本の固定画像 URL、文字領域は `createShape`（`shapeType: "TEXT_BOX"` または原本に合った形）に変換後の寸法・位置を渡します。`insertText`、`updateTextStyle`、`updateShapeProperties`、`updateParagraphStyle` で原本の文字・色・配置を再現します。表紙のテクスチャは先にページ全体へ配置し、白文字・白ロゴを後から追加します。通常ページのロゴ・コピーライトも省略しません。
+`reference/document-types.md` と同梱の JSON 例を使って `content.json` を作ります。作成した資料の GET 応答全体を `presentation.json` に保存し、同梱ビルダーの正常終了後だけ送信します。
+
+```bash
+node "$SKILL_DIR/scripts/build-deck.mjs" content.json presentation.json > updates.json && \
+curl --fail-with-body -sS -X POST \
+  'https://slides.googleapis.com/v1/presentations/PRESENTATION_ID:batchUpdate' \
+  -H "Authorization: Bearer $VAULT_TOKEN_SLIDES_GOOGLEAPIS_COM" \
+  -H 'Content-Type: application/json' \
+  --data-binary @updates.json
+```
+
+`SKILL_DIR` は `skills` の読み取りが返すスキル本体の絶対パスです。ビルダーは原本の画像・マスター・文字比率と、費用/ROI 計算結果からリクエストを生成します。空でない既存資料には使いません。
+
+## 既存資料の部分修正（承認後）
 
 `updates.json` の `requiredRevisionId` は、編集対象を直前に読んだ値です。`{{TITLE}}` と `SLIDE_OBJECT_ID` も実際のテキスト・ID に合わせます。全スライドを対象にするときだけ `pageObjectIds` を省略します。
 

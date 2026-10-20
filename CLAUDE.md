@@ -33,7 +33,9 @@ continue to pass.
 
 `acrosstudio-engagement` orchestrates the suite end-to-end: it runs intake →
 the `strat-*` analyses → `acrosstudio-google-slides` or `acrosstudio-pptx`,
-according to the requested delivery format, handing output between stages
+according to the requested delivery format. Google Slides supports proposals,
+meeting materials, cost estimates, and ROI presentations through its bundled
+request builder and financial calculator, handing output between stages
 through numbered markdown artifacts in an `engagement/` workspace. Each
 sub-skill stays independent and communicates only through those files, so
 skipping a stage is valid. See

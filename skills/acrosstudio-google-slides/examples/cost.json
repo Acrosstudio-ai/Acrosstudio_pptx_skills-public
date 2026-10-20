@@ -1,0 +1,35 @@
+{
+  "type": "cost",
+  "currency": "JPY",
+  "title": "構成別の費用試算（検証用）",
+  "subtitle": "架空の入力値・円・税抜",
+  "versionDate": "Ver 0.1 / 2026-10-20",
+  "copyrightYear": 2026,
+  "basis": "検証用の仮定値。単位は円・税抜、評価期間3年、運用費は毎月一定。",
+  "plans": [
+    {
+      "name": "クラウド構成",
+      "years": 3,
+      "oneTimeCosts": [
+        { "name": "要件整理", "amount": 300000 },
+        { "name": "開発・検証", "amount": 700000 }
+      ],
+      "monthlyCosts": [
+        { "name": "データ保管", "amount": 20000 },
+        { "name": "推論・監視", "amount": 30000 }
+      ]
+    },
+    {
+      "name": "オンプレ構成",
+      "years": 3,
+      "oneTimeCosts": [
+        { "name": "開発・検証", "amount": 1000000 },
+        { "name": "機器調達", "amount": 500000 }
+      ],
+      "monthlyCosts": [
+        { "name": "電気・保守", "amount": 20000 },
+        { "name": "バックアップ", "amount": 10000 }
+      ]
+    }
+  ]
+}

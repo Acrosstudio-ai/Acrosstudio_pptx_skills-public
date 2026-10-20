@@ -1,6 +1,6 @@
 ---
 name: acrosstudio-google-slides
-description: Google Slides（Google スライド）で Acrosstudio デザインの提案書・打合せ資料を新規作成・編集するとき、共同編集用リンクで納品するとき、またはその資料を PPTX に書き出すときに使います。
+description: Google Slides（Google スライド）で Acrosstudio デザインの提案書・打合せ資料・費用試算・ROI 資料を作成・編集するとき、戦略分析を資料化するとき、共同編集用リンクで納品するとき、または PPTX に書き出すときに使います。
 requiredCapabilities:
   - egress:www.googleapis.com
   - egress:slides.googleapis.com
@@ -14,7 +14,8 @@ requiredCapabilities:
 
 ## 使用する場面
 
-- Acrosstudio デザインの提案書・打合せ資料を Google スライドで新規作成する。
+- Acrosstudio デザインの提案書・打合せ資料・費用試算・ROI 資料を Google スライドで新規作成する。
+- 既存の `strat-*` 戦略分析を Google スライドの提案・意思決定・費用/ROI 資料へつなぐ。
 - 指定された既存の Google スライドを修正する。
 - 共同編集用リンクと、その資料の PPTX 書き出しを納品する。
 
@@ -22,7 +23,8 @@ Google に接続せず `.pptx` / `.xlsx` を生成する依頼は `acrosstudio-p
 
 ## 必要な情報
 
-- 読者、目的、文書タイプ、確定済みの内容。既存ブリーフや `engagement/` の分析成果物があれば再利用します。
+- 読者、目的、資料タイプ（提案書・打合せ・費用・ROI）、確定済みの内容。既存ブリーフや `engagement/` の分析成果物があれば再利用します。
+- 費用・ROI では、確認済みの初期費用、月額または年額運用費、年間効果、評価期間、税や利用量などの前提。不明な値は推定せず確認します。
 - 新規作成：資料名と保存先。テンプレート URL は不要です。
 - 既存資料の修正：対象 URL と変更範囲。原本の直接編集か、コピーへの編集かを確認します。
 - 納品形式：Google スライドのリンク、PPTX、または両方。
@@ -33,7 +35,9 @@ Google に接続せず `.pptx` / `.xlsx` を生成する依頼は `acrosstudio-p
 
 ### 1. 原本のデザインを読む
 
-最初に同梱の `reference/design-source.md` に従い、このリポジトリの原本を取得します。新しい独立したブランド規則を作らず、次を読みます。
+最初に同梱の `reference/design-source.md` と `reference/document-types.md` を読みます。QM では `skills` の `read` に `name: "acrosstudio-google-slides"` と `path: "reference/design-source.md"`（または他の同梱ファイルの相対パス）を指定できます。これらはこのスキル本体の配下であり、`.packs/` の共有ファイルではありません。
+
+`design-source.md` に従ってこのリポジトリの原本を取得します。新しい独立したブランド規則を作らず、次を読みます。
 
 1. `acrosstudio-pptx/SKILL.md` の絶対ルール・配色・フォント・マスター・余白・文体。
 2. `reference/design_rules.md`、`reference/content_patterns.md`、`reference/document_types.md`。
@@ -51,9 +55,11 @@ Google に接続せず `.pptx` / `.xlsx` を生成する依頼は `acrosstudio-p
 
 ### 3. Google スライドに描画する
 
-新規作成では空の Google スライドを承認済みの保存先に作成し、原本の例を土台に、表紙・本文・必要な章扉を Slides API の `createSlide`、`createShape`、`insertText`、`createImage`、書式更新で描画します。原本の黒・白ロゴと表紙テクスチャを実際に使い、テキストや別画像で代用しません。画像の固定 URL と単位変換は `reference/design-source.md` に従います。
+`reference/document-types.md` と `examples/proposal.json`・`meeting.json`・`cost.json`・`roi.json` の該当形式で、確認済みの入力を用意します。必要な分析だけを既存の `strat-*` に依頼し、その結果と未確定事項を資料へ引き継ぎます。
 
-取得した `pageSize` に合わせ、原本の寸法・位置・余白・文字サイズを同じ倍率で変換します。配色、フォント、ロゴ配置、表紙と通常ページの違い、コピーライト、文体を原本から引き継ぎます。PPTX のインチをそのまま Slides の pt として渡しません。
+QM の新規作成は、承認後に同梱の `scripts/create-deck.mjs` へ `content.json` と承認済み保存先 ID を渡します。既存 Google 接続を使い、入力検証 → 空資料作成 → 全メタデータ取得 → 共通ビルダーによる revision 条件付き描画を実行します。他の Google ツールを使う環境でも、同梱 `scripts/build-deck.mjs` の出力を使って描画します。低レベル JSON を作り直して `uri` / `url`、object ID、textRange などの不正な形式を繰り返し送信しません。
+
+ビルダーは原本の黒・白ロゴと表紙背景、通常ページのマスター、配色、フォント比率、余白を適用し、実際の `pageSize` に座標・文字サイズを合わせます。費用・ROI は `scripts/financials.mjs` で元の ROI 定義どおり計算します。内訳を省略したり、不明な値を 0 にしたりしません。長い内容はページを分け、文字を縮小して押し込みません。
 
 既存資料の直接編集は、その原本への変更が承認された場合だけ行います。既存資料のデザイン変更は依頼範囲に含まれる場合だけ行い、無断で全ページをリブランドしません。対象のスライド・要素 ID と直前の `revisionId` を読み、変更範囲を限定します。全体置換は全文を同じ内容へ変更するときだけ使います。
 
@@ -65,7 +71,9 @@ Google に接続せず `.pptx` / `.xlsx` を生成する依頼は `acrosstudio-p
 
 ブラウザーまたは各スライドのサムネイルを画像表示できるツールで、**全ページを原本のデザインと比較**します。表紙の背景・白文字・白ロゴ、通常ページの黒ロゴ・コピーライト、配色、フォント、文字切れ・重なり・余白を確認し、修正して再確認します。JSON の読み取りやファイル取得成功だけでデザイン確認済みとしません。目視確認できない場合は未検証と明示し、完成扱いにしません。レビュー画像を Git に追加しません。
 
-PPTX も求められたら同じ Google スライドから書き出します。Google による変換差異を確認し、未検証の PPTX を確認済みとして渡しません。
+費用・ROI では、計算ヘルパーの結果と表示値、評価期間・税・効果の前提、費用資料と ROI 資料の同じ入力値の一致も確認します。初期投資 0 の ROI や、ネット効果が正でない回収期間を成功数値として表示しません。
+
+PPTX も求められたら同じ Google スライドから書き出します。Google による変換差異を確認し、未検証の PPTX を確認済みとして渡しません。Slides の ROI 資料は前提と計算結果を示すもので、Excel の自動再計算機能を提供すると説明しません。
 
 ### 5. 納品する
 
