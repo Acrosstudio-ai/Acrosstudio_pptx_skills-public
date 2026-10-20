@@ -18,8 +18,9 @@ The repo root is a Claude Code plugin; `skills/` is the single source of truth.
 - `acrosstudio-engagement` — orchestrator that chains the skills below into one
   pipeline through an `engagement/` workspace.
 - `acrosstudio-pptx` — branded proposal / estimate / meeting-doc generator.
-- `acrosstudio-google-slides` — creates or edits Google Slides from an approved
-  Acrosstudio template, delivers an editable link, and optionally exports PPTX.
+- `acrosstudio-google-slides` — creates Google Slides using this repository's
+  Acrosstudio design rules, layouts, logos, and backgrounds, edits existing decks,
+  delivers an editable link, and optionally exports PPTX. No separate template required.
 
 Together these run a full engagement: `acrosstudio-engagement` takes the
 `acrosstudio-intake` brief through the relevant `strat-*` analyses and into the
@@ -62,14 +63,17 @@ An org admin can register this repository in **Admin → Skill packs**, pin the
 reviewed commit SHA, then **Browse → org-wide → Import selected**. Import
 `acrosstudio-google-slides`, plus intake, strategy, and engagement skills as needed.
 Org installation does not grant Google access: each user still needs an authorized
-Google connection and access to the template, target deck, and destination folder.
+Google connection and access to the target deck and destination folder.
 
 The Slides skill is text-only and bundles its QM API reference. It uses QM's
 existing `google-drive-sheets` connector skill rather than adding another OAuth
-integration. Provide an approved Acrosstudio Google Slides template URL; the
-Google template owns the branding, so no PPTX layout code or binary assets are
-copied into the Slides skill. Writes and sharing changes require approval, and
-completed decks require visual review.
+integration. The design source remains `skills/acrosstudio-pptx/` in this
+repository: its rules, examples, logos, and background are reused for native Slides
+output. The bundled `reference/design-source.md` retrieves a pinned source version,
+including assets omitted by QM's text-only importer. No separate Google Slides
+template is required, and no independent copy of the brand rules is maintained.
+Writes and sharing changes require approval; completed decks require visual review
+against the repository's design, not just a successful API call.
 
 The original `acrosstudio-pptx` remains available on the other platforms. QM's
 text-only pack importer excludes it because it contains PNG/JPG assets; importing

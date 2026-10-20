@@ -4,8 +4,12 @@
 
 ### Added
 
-- `acrosstudio-google-slides` for creating and editing decks from approved Acrosstudio Google Slides templates, delivering editable links, and optionally exporting the same deck to PPTX. It bundles a text-only QM API guide and reuses the existing per-user Google connector.
+- `acrosstudio-google-slides` for creating and editing decks using this repository's Acrosstudio design rules, examples, logos, and background, delivering editable links, and optionally exporting the same deck to PPTX. It bundles text-only source/API guides and reuses the existing per-user Google connector.
 - QM org-wide skill-pack installation instructions, including the existing binary-asset limitation of the original PPTX generator.
+
+### Fixed
+
+- Removed the incorrect external Google Slides template requirement. Slides now retrieves the canonical PPTX skill's pinned design sources and images and adapts their dimensions, typography, and layout to native Slides requests, including when QM excludes the original binary-containing skill.
 
 ### Changed
 

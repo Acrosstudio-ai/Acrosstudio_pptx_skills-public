@@ -15,7 +15,7 @@ curl --fail-with-body -sS --get 'https://www.googleapis.com/drive/v3/files/FILE_
   --data-urlencode 'fields=id,name,mimeType,webViewLink,capabilities'
 ```
 
-テンプレートは `application/vnd.google-apps.presentation`、保存先は `application/vnd.google-apps.folder` であることを確認します。保存先の共有範囲・追加権限も確認します。Drive 検索が必要なら既存スキルの全ドライブ検索・ページネーションを使います。
+既存の編集対象は `application/vnd.google-apps.presentation`、保存先は `application/vnd.google-apps.folder` であることを確認します。新規作成にテンプレートは不要です。保存先の共有範囲・追加権限も確認します。Drive 検索が必要なら既存スキルの全ドライブ検索・ページネーションを使います。
 
 ```bash
 curl --fail-with-body -sS 'https://slides.googleapis.com/v1/presentations/PRESENTATION_ID' \
@@ -24,25 +24,29 @@ curl --fail-with-body -sS 'https://slides.googleapis.com/v1/presentations/PRESEN
 
 `presentationId`、`revisionId`、`slides[].objectId` と要素のテキストを読みます。スライドと表のテキストだけでなく、テンプレート由来の発表者ノートと、Drive のコメントも確認します。コメントを残してコピーしたり、他案件の情報を納品したりしません。
 
-## テンプレートのコピー（承認後）
+## 空の Google スライドを作成する（承認後）
 
-利用者が承認した資料名と保存先を `copy.json` に用意します。
+利用者が承認した資料名と保存先を `create.json` に用意し、Drive に Google スライド形式で作成します。テンプレートのコピーから始めません。
 
 ```json
-{"name":"ご提案_v0.1","parents":["DESTINATION_FOLDER_ID"]}
+{"name":"ご提案_v0.1","mimeType":"application/vnd.google-apps.presentation","parents":["DESTINATION_FOLDER_ID"]}
 ```
 
 ```bash
 curl --fail-with-body -sS -X POST \
-  'https://www.googleapis.com/drive/v3/files/TEMPLATE_ID/copy?supportsAllDrives=true&ignoreDefaultVisibility=true&fields=id,name,webViewLink' \
+  'https://www.googleapis.com/drive/v3/files?supportsAllDrives=true&ignoreDefaultVisibility=true&fields=id,name,webViewLink' \
   -H "Authorization: Bearer $VAULT_TOKEN_WWW_GOOGLEAPIS_COM" \
   -H 'Content-Type: application/json' \
-  --data-binary @copy.json
+  --data-binary @create.json
 ```
 
-`ignoreDefaultVisibility=true` でも保存先フォルダの権限は継承されます。返された ID の資料を Slides API で読み直してから編集します。元テンプレートの ID や `revisionId` をコピー先の編集に使いません。
+`ignoreDefaultVisibility=true` でも保存先フォルダの権限は継承されます。返された ID の資料を Slides API で取得し、`pageSize`、`revisionId` と既存スライドの有無を確認します。`reference/design-source.md` に従って原本の座標・文字サイズを変換し、ロゴ・背景・本文を描画します。
 
-## 内容の編集（承認後）
+利用者が既存資料のコピーを明示的に依頼した場合だけ、Drive の `files/FILE_ID/copy` に承認済みの名前・保存先を渡します。コピー先の ID と revision を読み直してから編集し、元ファイルは変更しません。
+
+## 描画・内容の編集（承認後）
+
+新規ページは `createSlide`（`slideLayoutReference.predefinedLayout: "BLANK"`）で作ります。画像は `createImage` に原本の固定画像 URL、文字領域は `createShape`（`shapeType: "TEXT_BOX"` または原本に合った形）に変換後の寸法・位置を渡します。`insertText`、`updateTextStyle`、`updateShapeProperties`、`updateParagraphStyle` で原本の文字・色・配置を再現します。表紙のテクスチャは先にページ全体へ配置し、白文字・白ロゴを後から追加します。通常ページのロゴ・コピーライトも省略しません。
 
 `updates.json` の `requiredRevisionId` は、編集対象を直前に読んだ値です。`{{TITLE}}` と `SLIDE_OBJECT_ID` も実際のテキスト・ID に合わせます。全スライドを対象にするときだけ `pageObjectIds` を省略します。
 
