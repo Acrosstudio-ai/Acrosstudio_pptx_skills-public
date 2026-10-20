@@ -7,14 +7,9 @@ import {
   calculateRoi
 } from '../../skills/acrosstudio-google-slides/scripts/financials.mjs'
 
-const presentation = {
-  revisionId: 'test-revision',
-  pageSize: {
-    width: { magnitude: 9144000, unit: 'EMU' },
-    height: { magnitude: 5143500, unit: 'EMU' }
-  },
-  slides: [{ objectId: 'p' }]
-}
+const presentation = JSON.parse(
+  readFileSync(new URL('./fixtures/new-presentation.json', import.meta.url), 'utf8')
+)
 const example = (type) =>
   JSON.parse(
     readFileSync(
@@ -148,6 +143,26 @@ test('financial slides expose computed values and loss cases rather than placeho
   assert.ok(roi.includes('割引・インフレは未反映'))
   assert.ok(roi.includes('年間効果の測定方法と責任者'))
   assert.throws(() => buildDeck(presentation, { ...example('roi'), currency: 'USD' }))
+})
+
+test('empty default placeholders are allowed, but filled placeholders, automatic text and images are protected', () => {
+  for (const content of [
+    { textRun: { content: 'Existing customer content' } },
+    { autoText: { type: 'SLIDE_NUMBER' } }
+  ]) {
+    const existing = structuredClone(presentation)
+    existing.slides[0].pageElements[0].shape.text = { textElements: [content] }
+    assert.throws(() => buildDeck(existing, example('meeting')))
+  }
+  const image = structuredClone(presentation)
+  image.slides[0].pageElements.push({ image: { contentUrl: 'https://example.invalid/image.png' } })
+  assert.throws(() => buildDeck(image, example('meeting')))
+  const blank = structuredClone(presentation)
+  blank.slides[0].pageElements[0].shape.text = { textElements: [{ textRun: { content: '\n' } }] }
+  assert.equal(
+    buildDeck(blank, example('meeting')).requests.filter((request) => request.createSlide).length,
+    3
+  )
 })
 
 test('all cost lines survive pagination and existing slides cannot be overwritten', () => {

@@ -11,6 +11,7 @@
 
 ### Fixed
 
+- Treat Google's unfilled initial title/subtitle placeholders as an empty presentation, while refusing filled placeholders, automatic text, images, and other existing content. Regression tests use the observed Drive-created presentation structure.
 - Removed the incorrect external Google Slides template requirement. Slides now retrieves the canonical PPTX skill's pinned design sources and images and adapts their dimensions, typography, and layout to native Slides requests, including when QM excludes the original binary-containing skill.
 
 ### Changed

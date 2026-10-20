@@ -190,7 +190,17 @@ export function buildDeck(presentation, input) {
     throw new Error('copyrightYear must be explicit')
   if (!presentation.revisionId)
     throw new Error('Read the newly created presentation with edit access before building')
-  if ((presentation.slides ?? []).some((slide) => (slide.pageElements ?? []).length !== 0))
+  if (
+    (presentation.slides ?? []).some((slide) =>
+      (slide.pageElements ?? []).some(
+        (element) =>
+          !element.shape?.placeholder ||
+          (element.shape.text?.textElements ?? []).some(
+            (part) => part.autoText || part.textRun?.content?.trim()
+          )
+      )
+    )
+  )
     throw new Error(
       'Builder only accepts a new, empty presentation; never overwrite an existing deck'
     )

@@ -35,7 +35,7 @@ node "$SKILL_DIR/scripts/create-deck.mjs" content.json DESTINATION_FOLDER_ID
 node "$SKILL_DIR/scripts/build-deck.mjs" content.json presentation.json > updates.json
 ```
 
-`presentation.json` は、作成したばかりの資料を Slides API で **フィールドを省略せず** GET した応答です。`pageSize`・`revisionId`・`slides[].pageElements` を含めます。ビルダーは、新規の空資料（Google が最初に作る空白ページを含む）だけを受け付け、文字や画像のある既存資料を上書きしません。
+`presentation.json` は、作成したばかりの資料を Slides API で **フィールドを省略せず** GET した応答です。`pageSize`・`revisionId`・`slides[].pageElements` を含めます。ビルダーは、新規の空資料（Google が最初に作る未入力のタイトル・サブタイトル枠を含む）だけを受け付け、文字や画像のある既存資料を上書きしません。
 
 終了コード 0 の場合だけ `updates.json` を `presentations/PRESENTATION_ID:batchUpdate` に送信します。低レベルのリクエスト JSON を書き直さず、同梱ビルダーを使います。原本の黒白ロゴ・表紙背景・座標・フォント比率を適用し、正しい `createImage.url`、`elementProperties.pageObjectId`、5 文字以上の新規 object ID、`textRange.type: "ALL"` と revision 条件を生成します。トークンをこの JSON やスクリプトに書き込みません。
 

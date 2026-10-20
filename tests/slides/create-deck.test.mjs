@@ -7,11 +7,9 @@ const tokens = {
   driveToken: 'sensitive-drive-token',
   slidesToken: 'sensitive-drive-token-extended-slides'
 }
-const presentation = {
-  revisionId: 'revision',
-  pageSize: { width: { magnitude: 720, unit: 'PT' }, height: { magnitude: 405, unit: 'PT' } },
-  slides: [{ objectId: 'p' }]
-}
+const presentation = JSON.parse(
+  readFileSync(new URL('./fixtures/new-presentation.json', import.meta.url), 'utf8')
+)
 const example = (type) =>
   JSON.parse(
     readFileSync(
@@ -43,7 +41,7 @@ for (const type of ['proposal', 'meeting', 'cost', 'roi']) {
         assert.equal(options.headers.Authorization, `Bearer ${tokens.slidesToken}`)
         if (calls.length === 2) return new Response(JSON.stringify(presentation))
         const update = JSON.parse(options.body)
-        assert.equal(update.writeControl.requiredRevisionId, 'revision')
+        assert.equal(update.writeControl.requiredRevisionId, 'test-revision')
         assert.ok(
           update.requests.some((request) => request.createImage?.url.endsWith('/logo_black.png'))
         )
